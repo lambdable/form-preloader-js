@@ -1,14 +1,11 @@
 {
-  "name": "form-preloader-js",
-  "version": "1.0.0",
-  "description": "Javascript plugin to reinitialise form on the form page reloads",
-  "main": "form_preloader.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "name": "input-preloader-js",
+  "version": "2.0.0",
+  "description": "Javascript plugin to preload form inputs on the web",
+  "main": "input_preloader.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zaimramlan/form-preloader-js.git"
+    "url": "git+https://github.com/lambdable/input-preloader-js.git"
   },
   "keywords": [
     "form",
@@ -18,9 +15,9 @@
     "javascript"
   ],
   "author": "Zaim Ramlan <zaem.muz@gmail.com>",
-  "license": "MIT",
+  "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/zaimramlan/form-preloader-js/issues"
+    "url": "https://github.com/lambdable/input-preloader-js/issues"
   },
-  "homepage": "https://github.com/zaimramlan/form-preloader-js#readme"
+  "homepage": "https://github.com/lambdable/input-preloader-js#readme"
 }
