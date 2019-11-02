@@ -1,119 +1,142 @@
 /*
-* Input_Preloader.js by Zaim Ramlan
-*
-* let,
-* FIELD_ID - id of the targeted input field
-* FIELD_TYPE - type of the targeted input field
-* var field_1 = "FIELD_ID:FIELD_TYPE"
-*
-* acceptable arguments:
-* var preloader_instance = new FormPreloader(field_1, field_2, ..., field_n)
-*
-* note: 
-* 1) requires jQuery to work
-* 2) arguments must only be a string
-* 3) arguments that can be passed are unlimited
+* InputPreloader 2.0.0
+* Copyright © 2019 Zaim Ramlan
 */
 
-var FormPreloader = function() {
-	// initialize the input_fields to the paramters passed into the class
-	this.form_fields = translate_input(arguments);
+class InputPreloader {
 
-	// convert string parameter to hash array
-	function translate_input(parameters) {
-		// initialize an empty array
-		all_form_fields = [];
+    /**
+    * Creates an instance of InputPreloader.
+    *
+    * @constructor
+    * @author: Zaim Ramlan
+    * @param {array} input The array of form fields with its corresponding expected field type, that
+    * are desired to be preloaded.
+    */
+    constructor(inputs) {
+        this._inputs = this._toHash(inputs);
+    }
 
-		for(var i = 0; i < parameters.length; i++) {
-			parameter = parameters[i].split(":");
-			current_input = {id: parameter[0], type: parameter[1]};
-			all_form_fields.push(current_input);
-		}
+    /**
+     * Configures to save the given inputs before moving away from
+     * the page, and preloads them (if their data exists).
+     */
+    configure() {
+        this._setToSaveInputsBeforeUnloading();
+        this._preloadInputsIfAvailable();
+    }
 
-		return all_form_fields;
-	}	
+    /**
+     * Deconfigures to not save the given inputs before moving away from
+     * the page, and remove all stored inputs (if their data exists).
+     */
+    deconfigure() {
+        this._unsetToSaveInputsBeforeUnloading();
+        this._removeAllStoredInputs();
+    }
 
-	// to be called to activate the FormPreloader
-	this.activate = function() {
-		// preload inputs on page reload if input fields exist
-		if(this.fields_exist_in_storage()) this.preload_form();
-		// saves input values into sessionStorage before page reload
-		this.save_before_reload();
-	}
+    /**
+    * Breaks down the form fields from string, into a hash of inputs.
+    *
+    * @param {array} input The array of form fields with its corresponding expected field type, that
+    * are desired to be preloaded.
+    * @return {array} An array of hashes of each form fields passed.
+    */
+    _toHash(inputs) {
+        inputsArray = [];
 
-	// to be called to deactivate the FormPreloader
-	this.deactivate = function() {
-		// removes the input fields stored in sessionStorage
-	    for(var i = 0; i < this.form_fields.length; i++) {
-		    sessionStorage.removeItem(this.form_fields[i].id);
-	    }
-	}	
+        inputs.forEach((input) => {
+            inputDetails = input.split(":");
+            inputHash = { id: inputDetails[0], type: inputDetails[1], value: null };
+            inputsArray.push(inputHash);
+        });
 
-	// checks if the input field values exist in sessionStorage
-	this.fields_exist_in_storage = function() {
-		// assume all input values exist
-	    var all_fields_exist = true;
+        return inputsArray;
+    }
 
-	    for(var i = 0; i < this.form_fields.length; i++) {
-	    	var current_field_exists = sessionStorage.getItem(this.form_fields[i].id) !== null;
-	    	// change the truth value if any 1 input does not exists
-	    	all_fields_exist = all_fields_exist && current_field_exists;
-	    }
+    /**
+     * Saves inputs' values in the session storage before for preloading,
+     * before unloading the page.
+     */
+    _setToSaveInputsBeforeUnloading() {
+        var self = this;
 
-	    return all_fields_exist;
-	}
+        window.onbeforeunload = function() {
+            self._inputs.forEach((input) => {
+                var element = document.getElementById(input.id);
 
-	// load inputs on page load
-	this.preload_form = function() {
-	    for(var i = 0; i < this.form_fields.length; i++) {
-	    	var field_value = sessionStorage.getItem(this.form_fields[i].id);
-	    	/*
-	    	* sets the input values got from sessionStorage
-	    	* based on field_value.type
-	    	*/
-	    	field_type = this.form_fields[i].type;
-	    	if(field_type === "radio") {
-	    		$('#' + this.form_fields[i].id + "_" + field_value).prop('checked', true);
-	    	} else {
-		    	switch(field_type) {
-		    		case "float": 
-		    			field_value = parseFloat(field_value);
-		    			break;
-		    		case "integer":
-		    			field_value = parseInt(field_value);
-		    			break;
-		    		case "string":
-		    			// do nothing with field_value as it's already string
-		    			break;
-		    	}
-	    		$('#' + this.form_fields[i].id).val(field_value);
-	    	}
-	    }
-	}
+                if (element !== null) {
+                    var isRadioButton = input.type === "radio";
+                    var value = isRadioButton ? element.checked : element.value;
+                    sessionStorage.setItem(input.id, value);
+                }
+            });
+        }
+    }
 
-	// temporarily store input values in sessionStorage
-	this.save_before_reload = function() {
-		/*
-		* since window.onbeforeunload is another function deep, 
-		* the 'this' context can't be preserved to the class's 'this' context.
-		* so, we need to put it in a placeholder for it to be used in
-		* window.onbeforeunload function.
-		*/
-		var self = this;
-	    window.onbeforeunload = function() {
-		    for(var i = 0; i < self.form_fields.length; i++) {
-		    	current_field = self.form_fields[i];
-		    	if(current_field.type === "radio") {
-		    		/*
-		    		* navigate through the fields with the same id,
-		    		* set value equals to the input that is checked
-		    		*/
-		    		value = $('[name = ' + current_field.id + ']').filter(':checked').prop('value')
-		    	} else {
-		    		value = $('#' + current_field.id).val();
-		    	}
-		        sessionStorage.setItem(current_field.id, value);
-		    }
-	    }  
-	}
+    /**
+     * Preloads inputs' values, if it's available.
+     */
+    _preloadInputsIfAvailable() {
+        var self = this;
+
+        this._inputs.forEach((input) => {
+            var value = sessionStorage.getItem(input.id);
+
+            if (value !== null) {
+                input.value = value;
+                self._preload(input);
+            }
+        });
+    }
+
+    /**
+     * Preloads the element with the `input.id`, to
+     * the `input.value` of `input.type`.
+     */
+    _preload(input) {
+        if (input.value !== "") {
+            switch(input.type) {
+            case "radio":
+                input.value = input.value === "true";
+                break;
+
+            case "float":
+                input.value = parseFloat(input.value);
+                break;
+
+            case "integer":
+                input.value = parseInt(input.value);
+                break;
+
+            case "string":
+                // do nothing with `input.value` as it's already a string
+                break;
+            }
+        }
+
+        var element = document.getElementById(input.id);
+        if (element !== null) {
+            var isRadioButton = input.type === "radio";
+            isRadioButton ? element.checked = input.value : element.value = input.value;
+        }
+    }
+
+    /**
+     * Remove any functions to be executed on `onbeforeunload`.
+     */
+    _unsetToSaveInputsBeforeUnloading() {
+        window.onbeforeunload = null;
+    }
+
+    /**
+     * Removes all stored inputs.
+     */
+    _removeAllStoredInputs() {
+        this._inputs.forEach((input) => {
+            sessionStorage.removeItem(input.id);
+        });
+    }
 }
+
+module.exports = InputPreloader;
