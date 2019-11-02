@@ -10,11 +10,11 @@ class InputPreloader {
     *
     * @constructor
     * @author: Zaim Ramlan
-    * @param {array} input The array of form fields with its corresponding expected field type, that
+    * @param {array} inputs The array of inputs with their corresponding expected input type, that
     * are desired to be preloaded.
     */
     constructor(inputs) {
-        this._inputs = this._toHash(inputs);
+        this._inputs = this._toObject(inputs);
     }
 
     /**
@@ -36,13 +36,13 @@ class InputPreloader {
     }
 
     /**
-    * Breaks down the form fields from string, into a hash of inputs.
+    * Breaks down the inputs from string, into a object of inputs.
     *
-    * @param {array} input The array of form fields with its corresponding expected field type, that
+    * @param {array} inputs The array of inputs with their corresponding expected input type, that
     * are desired to be preloaded.
-    * @return {array} An array of hashes of each form fields passed.
+    * @return {array} An array of input objects of each inputs passed.
     */
-    _toHash(inputs) {
+    _toObject(inputs) {
         inputsArray = [];
 
         inputs.forEach((input) => {
@@ -55,7 +55,7 @@ class InputPreloader {
     }
 
     /**
-     * Saves inputs' values in the session storage before for preloading,
+     * Sets to save inputs' values in the session storage for preloading,
      * before unloading the page.
      */
     _setToSaveInputsBeforeUnloading() {
@@ -75,7 +75,7 @@ class InputPreloader {
     }
 
     /**
-     * Preloads inputs' values, if it's available.
+     * Preloads inputs' values, if they are available.
      */
     _preloadInputsIfAvailable() {
         var self = this;
@@ -91,8 +91,10 @@ class InputPreloader {
     }
 
     /**
-     * Preloads the element with the `input.id`, to
-     * the `input.value` of `input.type`.
+     * Preloads the element with the `input.id`, to the `input.value`
+     * of `input.type`.
+     *
+     * @param {object} input The input object that has the input's `id`, `type` and `value`.
      */
     _preload(input) {
         if (input.value !== "") {
@@ -123,7 +125,7 @@ class InputPreloader {
     }
 
     /**
-     * Remove any functions to be executed on `onbeforeunload`.
+     * Remove functions to be executed on `window.onbeforeunload`.
      */
     _unsetToSaveInputsBeforeUnloading() {
         window.onbeforeunload = null;
