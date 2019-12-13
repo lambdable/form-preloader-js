@@ -1,11 +1,11 @@
 {
   "name": "input-preloader-js",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Javascript plugin to preload form inputs on the web",
   "main": "input_preloader.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lambdable/input-preloader-js.git"
+    "url": "git+https://github.com/pakej/input-preloader-js.git"
   },
   "keywords": [
     "form",
@@ -14,10 +14,10 @@
     "page",
     "javascript"
   ],
-  "author": "Zaim Ramlan <zaem.muz@gmail.com>",
+  "author": "Zaim Ramlan <zaimramlan@gmail.com>",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/lambdable/input-preloader-js/issues"
+    "url": "https://github.com/pakej/input-preloader-js/issues"
   },
-  "homepage": "https://github.com/lambdable/input-preloader-js#readme"
+  "homepage": "https://github.com/pakej/input-preloader-js#readme"
 }
