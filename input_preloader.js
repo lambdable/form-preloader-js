@@ -1,5 +1,5 @@
 /*
-* InputPreloader 2.0.0
+* InputPreloader 2.0.1
 * Copyright © 2019 Zaim Ramlan
 */
 
